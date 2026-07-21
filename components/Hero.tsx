@@ -9,7 +9,7 @@ export function Hero() {
     <section className="relative w-full py-20 md:py-32 overflow-hidden">
       {/* Background GIF of stars — place a `stars.gif` in `public/stars.gif` */}
       <img
-        src="/stars.gif"
+        src="/products/brown-boy.jpeg"
         alt="stars background"
         className="absolute inset-0 w-full h-full object-cover -z-20 opacity-100"
         aria-hidden
