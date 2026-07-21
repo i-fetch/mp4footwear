@@ -1,0 +1,211 @@
+export interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviews: number;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  specs: {
+    material: string;
+    weight: string;
+    comfort: string;
+  };
+  sizes: number[];
+  inStock: boolean;
+}
+
+export const products: Product[] = [
+  {
+    id: '1',
+    name: 'Zenith Pro',
+    brand: 'MP4',
+    price: 245,
+    originalPrice: 280,
+    rating: 4.8,
+    reviews: 342,
+    category: 'Performance',
+    image: '/products/zenith-pro.png',
+    images: ['/products/zenith-pro.png', '/products/zenith-pro.png'],
+    description: 'The ultimate performance sneaker designed for maximum comfort and style. Engineered with advanced cushioning technology for all-day wear.',
+    specs: {
+      material: 'Premium Mesh & Suede',
+      weight: '285g',
+      comfort: 'Ultra-responsive cushioning'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '2',
+    name: 'Elite Classic',
+    brand: 'MP4',
+    price: 189,
+    rating: 4.7,
+    reviews: 218,
+    category: 'Classic',
+    image: '/products/elite-classic.png',
+    images: ['/products/elite-classic.png', '/products/elite-classic.png'],
+    description: 'Timeless design meets modern comfort. A versatile sneaker that works with any wardrobe.',
+    specs: {
+      material: 'Full Grain Leather',
+      weight: '310g',
+      comfort: 'Padded insole technology'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '3',
+    name: 'Nova Rush',
+    brand: 'MP4',
+    price: 215,
+    originalPrice: 260,
+    rating: 4.9,
+    reviews: 487,
+    category: 'Running',
+    image: '/products/nova-rush.png',
+    images: ['/products/nova-rush.png', '/products/nova-rush.png'],
+    description: 'Lightning-fast responsiveness with minimal weight. Perfect for runners who demand performance.',
+    specs: {
+      material: 'Knit Mesh & Carbon Fiber',
+      weight: '245g',
+      comfort: 'Responsive gel cushioning'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '4',
+    name: 'Velocity X',
+    brand: 'MP4',
+    price: 275,
+    rating: 4.6,
+    reviews: 156,
+    category: 'Performance',
+    image: '/products/velocity-x.png',
+    images: ['/products/velocity-x.png', '/products/velocity-x.png'],
+    description: 'Maximum speed, maximum style. The choice of professional athletes.',
+    specs: {
+      material: 'Advanced Knit Weave',
+      weight: '268g',
+      comfort: 'Adaptive cushioning system'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '5',
+    name: 'Summit Peak',
+    brand: 'MP4',
+    price: 165,
+    rating: 4.5,
+    reviews: 89,
+    category: 'Casual',
+    image: '/products/summit-peak.png',
+    images: ['/products/summit-peak.png', '/products/summit-peak.png'],
+    description: 'Elevated casual style with premium comfort. Your new favorite everyday sneaker.',
+    specs: {
+      material: 'Canvas & Suede Blend',
+      weight: '295g',
+      comfort: 'Memory foam insole'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '6',
+    name: 'Horizon Air',
+    brand: 'MP4',
+    price: 229,
+    rating: 4.7,
+    reviews: 312,
+    category: 'Casual',
+    image: '/products/horizon-air.png',
+    images: ['/products/horizon-air.png', '/products/horizon-air.png'],
+    description: 'Breathable and lightweight. Perfect for warm weather adventures.',
+    specs: {
+      material: 'Breathable Mesh',
+      weight: '260g',
+      comfort: 'Air-flow technology'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '7',
+    name: 'Urban Edge',
+    brand: 'MP4',
+    price: 199,
+    originalPrice: 220,
+    rating: 4.8,
+    reviews: 425,
+    category: 'Urban',
+    image: '/products/urban-edge.png',
+    images: ['/products/urban-edge.png', '/products/urban-edge.png'],
+    description: 'Street-ready style with streetwear credibility. Made for the modern urbanite.',
+    specs: {
+      material: 'Mixed Materials',
+      weight: '305g',
+      comfort: 'Street-optimized sole'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+  {
+    id: '8',
+    name: 'Legacy Pro',
+    brand: 'MP4',
+    price: 249,
+    rating: 4.9,
+    reviews: 534,
+    category: 'Performance',
+    image: '/products/legacy-pro.png',
+    images: ['/products/legacy-pro.png', '/products/legacy-pro.png'],
+    description: 'Where heritage meets innovation. The legacy of excellence continues.',
+    specs: {
+      material: 'Premium Leather',
+      weight: '320g',
+      comfort: 'Ergonomic arch support'
+    },
+    sizes: [6, 7, 8, 9, 10, 11, 12, 13],
+    inStock: true,
+  },
+];
+
+export const categories = [
+  'All',
+  'Performance',
+  'Running',
+  'Casual',
+  'Urban',
+  'Classic',
+];
+
+export const testimonials = [
+  {
+    id: '1',
+    author: 'Alex Johnson',
+    role: 'Professional Athlete',
+    content: 'MP4 KICKS transformed my training routine. The comfort and performance are unmatched.',
+    avatar: '👟',
+  },
+  {
+    id: '2',
+    author: 'Sarah Chen',
+    role: 'Sneaker Enthusiast',
+    content: 'Finally found sneakers that look as good as they feel. Absolute game changer.',
+    avatar: '✨',
+  },
+  {
+    id: '3',
+    author: 'Marcus Williams',
+    role: 'Urban Designer',
+    content: 'The attention to detail in every pair is incredible. These are works of art.',
+    avatar: '🎨',
+  },
+];
