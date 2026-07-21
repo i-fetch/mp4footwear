@@ -19,7 +19,7 @@ export function Testimonials() {
             What Our Customers Say
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-            Loved by Sneaker Enthusiasts
+            Loved by palms Enthusiasts
           </h2>
         </motion.div>
 

@@ -20,7 +20,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">MP4</h3>
             <p className="text-background/75">
-              Premium sneakers crafted for excellence. Elevating style and performance since 2016.
+              Premium palms crafted for excellence. Elevating style and performance since 2016.
             </p>
           </div>
 

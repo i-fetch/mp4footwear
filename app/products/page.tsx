@@ -44,7 +44,7 @@ function ProductsContent() {
                 All Products
               </h1>
               <p className="text-lg text-muted-foreground mt-4">
-                Browse our complete collection of premium sneakers
+                Browse our complete collection of premium palmss
               </p>
             </div>
 
