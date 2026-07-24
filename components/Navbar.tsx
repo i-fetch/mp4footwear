@@ -20,7 +20,7 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <div className="text-2xl font-bold tracking-tighter text-foreground">
-                MP4
+                MP4 Footwear
               </div>
             </Link>
 

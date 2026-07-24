@@ -22,7 +22,7 @@ export interface Product {
 export const products: Product[] = [
   {
     id: '1',
-    name: 'Brown-boy',
+    name: 'Geen-barett',
     brand: 'MP4',
     price: 245,
     originalPrice: 280,
