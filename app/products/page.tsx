@@ -3,18 +3,56 @@
 import { CartProvider } from '@/lib/cartContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { products, categories } from '@/lib/mockData';
 import { ProductCard } from '@/components/ProductCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+interface Product {
+  _id: string;
+  id?: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviews: number;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  specs: {
+    material: string;
+    weight: string;
+    comfort: string;
+  };
+  sizes: number[];
+  inStock: boolean;
+}
+
+const categories = ['All', 'Performance', 'Classic', 'Running', 'Casual'];
+
 function ProductsContent() {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('featured');
 
+  useEffect(() => {
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        setAllProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch products:', err);
+        setLoading(false);
+      });
+  }, []);
+
   const filtered = selectedCategory === 'All'
-    ? products
-    : products.filter((p) => p.category === selectedCategory);
+    ? allProducts
+    : allProducts.filter((p) => p.category === selectedCategory);
 
   const sorted = [...filtered].sort((a, b) => {
     switch (sortBy) {
@@ -33,7 +71,17 @@ function ProductsContent() {
     <>
       <Navbar />
       <main className="w-full min-h-screen bg-background">
+        {/* Loading State */}
+        {loading && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-center text-muted-foreground">
+              Loading products...
+            </div>
+          </div>
+        )}
+
         {/* Header */}
+        {!loading && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
             <div>
@@ -88,17 +136,24 @@ function ProductsContent() {
           {/* Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             {sorted.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
+              <ProductCard key={product._id || product.id} product={product} index={index} />
             ))}
           </div>
+
+          {sorted.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              No products found in this category.
+            </div>
+          )}
 
           {/* Results Count */}
           <div className="text-center py-8">
             <p className="text-muted-foreground">
-              Showing {sorted.length} of {products.length} products
+              Showing {sorted.length} of {allProducts.length} products
             </p>
           </div>
         </div>
+        )}
       </main>
       <Footer />
     </>

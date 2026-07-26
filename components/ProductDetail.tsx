@@ -1,11 +1,32 @@
 'use client';
 
-import { Product } from '@/lib/mockData';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Star, Truck, Shield, RotateCcw } from 'lucide-react';
 import { useCart } from '@/lib/cartContext';
 import { motion } from 'framer-motion';
+
+interface Product {
+  _id?: string;
+  id?: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviews: number;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  specs: {
+    material: string;
+    weight: string;
+    comfort: string;
+  };
+  sizes: number[];
+  inStock: boolean;
+}
 
 interface ProductDetailProps {
   product: Product;

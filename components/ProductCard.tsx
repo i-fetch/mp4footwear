@@ -1,12 +1,33 @@
 'use client';
 
-import { Product } from '@/lib/mockData';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useCart } from '@/lib/cartContext';
+
+interface Product {
+  _id?: string;
+  id?: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviews: number;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  specs: {
+    material: string;
+    weight: string;
+    comfort: string;
+  };
+  sizes: number[];
+  inStock: boolean;
+}
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +37,7 @@ interface ProductCardProps {
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const { addItem } = useCart();
+  const productId = product._id || product.id || '';
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -23,7 +45,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const handleQuickAdd = () => {
     if (product.sizes.length > 0) {
       addItem({
-        productId: product.id,
+        productId,
         name: product.name,
         price: product.price,
         size: product.sizes[0],
@@ -41,7 +63,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       viewport={{ once: true }}
       className="group"
     >
-      <Link href={`/products/${product.id}`}>
+      <Link href={`/products/${productId}`}>
         <div
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -73,7 +95,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
           {product.brand}
         </p>
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/products/${productId}`}>
           <h3 className="font-bold text-foreground group-hover:text-muted-foreground transition-colors">
             {product.name}
           </h3>

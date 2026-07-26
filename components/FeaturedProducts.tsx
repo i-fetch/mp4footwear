@@ -1,13 +1,59 @@
 'use client';
 
-import { products } from '@/lib/mockData';
+import { useEffect, useState } from 'react';
 import { ProductCard } from './ProductCard';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
+interface Product {
+  _id: string;
+  id?: string;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviews: number;
+  category: string;
+  image: string;
+  images: string[];
+  description: string;
+  specs: {
+    material: string;
+    weight: string;
+    comfort: string;
+  };
+  sizes: number[];
+  inStock: boolean;
+}
+
 export function FeaturedProducts() {
-  const featured = products.slice(0, 8);
+  const [featured, setFeatured] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        setFeatured(data.slice(0, 8));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load products:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="featured" className="w-full py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 text-center text-muted-foreground">
+          Loading featured products...
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="featured" className="w-full py-20 md:py-32">
