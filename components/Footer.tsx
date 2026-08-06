@@ -32,10 +32,13 @@ export function Footer() {
                 href="/products"
                 className="block hover:text-background transition-colors"
               >
-              
+                All Products
+              </Link>
+              <Link
+                href="/products"
+                className="block hover:text-background transition-colors"
+              >
                
-    
-    
               </Link>
             </div>
           </div>
