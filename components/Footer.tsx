@@ -35,7 +35,7 @@ export function Footer() {
               
                
     
-                Sale
+    
               </Link>
             </div>
           </div>
@@ -61,7 +61,7 @@ export function Footer() {
             <div className="space-y-3 text-sm text-background/75">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+234 905 776 9271</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
