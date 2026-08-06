@@ -32,24 +32,9 @@ export function Footer() {
                 href="/products"
                 className="block hover:text-background transition-colors"
               >
-                All Products
-              </Link>
-              <Link
-                href="/products"
-                className="block hover:text-background transition-colors"
-              >
-                New Arrivals
-              </Link>
-              <Link
-                href="/products"
-                className="block hover:text-background transition-colors"
-              >
-                Best Sellers
-              </Link>
-              <Link
-                href="/products"
-                className="block hover:text-background transition-colors"
-              >
+              
+               
+    
                 Sale
               </Link>
             </div>
@@ -66,9 +51,7 @@ export function Footer() {
                 Contact
               </Link>
              
-              <Link href="/" className="block hover:text-background transition-colors">
-                Blog
-              </Link>
+              
             </div>
           </div>
 
@@ -86,7 +69,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>New York, NY</span>
+                <span>Asaba, NG</span>
               </div>
             </div>
           </div>
