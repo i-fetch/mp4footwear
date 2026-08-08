@@ -26,7 +26,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Shop</h4>
+            <h4 className="font-semibold">Our Shop</h4>
             <div className="space-y-2 text-sm text-background/75">
               <Link
                 href="/products"
