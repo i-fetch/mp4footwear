@@ -78,7 +78,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <h3 className="font-semibold text-foreground">{item.name}</h3>
                         <p className="text-sm text-muted-foreground">Size: {item.size}</p>
                         <p className="text-sm font-medium text-foreground mt-2">
-                          ${item.price.toFixed(2)}
+                          ₦{item.price.toFixed(2)}
                         </p>
 
                         {/* Quantity Controls */}
@@ -121,7 +121,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="border-t border-border p-6 space-y-4">
                 <div className="flex justify-between items-center text-lg font-bold">
                   <span>Total:</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₦{total.toFixed(2)}</span>
                 </div>
                 <button className="w-full bg-foreground text-background py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
                   Checkout

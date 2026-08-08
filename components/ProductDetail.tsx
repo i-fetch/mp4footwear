@@ -123,11 +123,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-2 pb-6 border-b border-border">
             <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-foreground">
-                ${product.price}
+                ₦{product.price}
               </span>
               {product.originalPrice && (
                 <span className="text-xl line-through text-muted-foreground">
-                  ${product.originalPrice}
+                  ₦{product.originalPrice}
                 </span>
               )}
             </div>
@@ -216,7 +216,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <Truck className="w-5 h-5 text-foreground flex-shrink-0 mt-1" />
             <div>
               <p className="font-medium text-foreground">Free Shipping</p>
-              <p className="text-sm text-muted-foreground">On orders over $100</p>
+              <p className="text-sm text-muted-foreground">On orders over ₦100</p>
             </div>
           </div>
           <div className="flex items-start gap-3">

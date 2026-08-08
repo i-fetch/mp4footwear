@@ -112,10 +112,10 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
         {/* Price */}
         <div className="flex items-center gap-2 pt-2">
-          <span className="text-lg font-bold text-foreground">${product.price}</span>
+          <span className="text-lg font-bold text-foreground">₦{product.price}</span>
           {product.originalPrice && (
             <span className="text-sm line-through text-muted-foreground">
-              ${product.originalPrice}
+              ₦{product.originalPrice}
             </span>
           )}
         </div>

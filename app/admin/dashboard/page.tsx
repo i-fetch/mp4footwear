@@ -142,7 +142,7 @@ export default function AdminDashboard() {
                         {product.brand}
                       </td>
                       <td className="px-6 py-4 text-sm text-white font-medium">
-                        ${product.price}
+                        ₦{product.price}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-300">
                         {product.category}
