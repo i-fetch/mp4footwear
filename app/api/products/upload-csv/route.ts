@@ -50,14 +50,19 @@ export async function POST(req: NextRequest) {
       reviews: parseInt(record.reviews) || 0,
       category: record.category,
       image: record.image,
-      images: record.images ? record.images.split(';') : [record.image],
+      images: record.images ? record.images.split(';').map((s: string) => s.trim()) : [record.image],
       description: record.description,
       specs: {
         material: record.specs_material,
         weight: record.specs_weight,
         comfort: record.specs_comfort,
       },
-      sizes: record.sizes ? record.sizes.split(',').map((s: string) => parseInt(s)) : [6, 7, 8, 9, 10, 11, 12, 13],
+      sizes: record.sizes
+        ? record.sizes
+            .split(/[,;]+/)
+            .map((s: string) => parseInt(s.trim(), 10))
+            .filter((n: number) => !Number.isNaN(n))
+        : [6, 7, 8, 9, 10, 11, 12, 13],
       inStock: record.inStock !== 'false',
     }));
 
