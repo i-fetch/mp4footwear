@@ -18,9 +18,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold">MP4</h3>
+            <h3 className="text-2xl font-bold">MP4 Footwears</h3>
             <p className="text-background/75">
-              Premium palms crafted for excellence. Elevating style and performance since 2016.
+              Premium palms crafted for excellence. Elevating style and performance since 2024.
             </p>
           </div>
 
