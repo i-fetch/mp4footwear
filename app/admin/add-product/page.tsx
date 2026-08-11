@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -9,6 +9,8 @@ export default function AddProduct() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [additionalImageFiles, setAdditionalImageFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     brand: 'MP4',
@@ -41,12 +43,43 @@ export default function AddProduct() {
     }
   };
 
+  const uploadImages = async () => {
+    if (!mainImageFile) {
+      throw new Error('Please upload a primary image');
+    }
+
+    const uploadFormData = new FormData();
+    uploadFormData.append('mainImage', mainImageFile);
+    additionalImageFiles.forEach((file) => {
+      uploadFormData.append('additionalImages', file);
+    });
+
+    const res = await fetch('/api/products/upload', {
+      method: 'POST',
+      body: uploadFormData,
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to upload images');
+    }
+
+    return res.json();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    if (!mainImageFile) {
+      setError('Please upload a primary image');
+      setLoading(false);
+      return;
+    }
+
     try {
+      const uploadedImages = await uploadImages();
       const productData = {
         name: formData.name,
         brand: formData.brand,
@@ -55,8 +88,8 @@ export default function AddProduct() {
         rating: parseFloat(formData.rating),
         reviews: parseInt(formData.reviews),
         category: formData.category,
-        image: formData.image,
-        images: formData.images.split(',').map((s) => s.trim()),
+        image: uploadedImages.mainImage || formData.image,
+        images: uploadedImages.images || [],
         description: formData.description,
         specs: {
           material: formData.specs_material,
@@ -81,7 +114,7 @@ export default function AddProduct() {
 
       router.push('/admin/dashboard');
     } catch (err) {
-      setError('An error occurred');
+      setError(err instanceof Error ? err.message : 'An error occurred');
       console.error(err);
     } finally {
       setLoading(false);
@@ -210,33 +243,32 @@ export default function AddProduct() {
             </div>
 
             {/* Images */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Image URL *
-              </label>
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                required
-                placeholder="/products/image.jpg"
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500"
-              />
-            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Primary Image *
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setMainImageFile(e.target.files?.[0] || null)}
+                  required
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-200 file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-3 file:py-1.5 file:text-white"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Additional Images (comma-separated)
-              </label>
-              <input
-                type="text"
-                name="images"
-                value={formData.images}
-                onChange={handleChange}
-                placeholder="/products/img1.jpg,/products/img2.jpg"
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500"
-              />
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Additional Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setAdditionalImageFiles(Array.from(e.target.files || []))}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-200 file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-3 file:py-1.5 file:text-white"
+                />
+              </div>
             </div>
 
             {/* Description */}

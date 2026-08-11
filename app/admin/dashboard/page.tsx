@@ -136,7 +136,7 @@ export default function AdminDashboard() {
                       className="hover:bg-slate-700 transition"
                     >
                       <td className="px-6 py-4 text-sm text-white">
-                        {product.name}
+                        <div className="max-w-[220px] truncate font-medium">{product._id}</div>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-300">
                         {product.brand}
