@@ -36,7 +36,14 @@ export function FeaturedProducts() {
     fetch('/api/products')
       .then((res) => res.json())
       .then((data) => {
-        setFeatured(data.slice(0, 8));
+        if (Array.isArray(data)) {
+          setFeatured(data.slice(0, 8));
+        } else if (data && Array.isArray((data as any).products)) {
+          setFeatured((data as any).products.slice(0, 8));
+        } else {
+          console.error('Unexpected products response:', data);
+          setFeatured([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -85,7 +92,7 @@ export function FeaturedProducts() {
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {featured.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <ProductCard key={product.id ?? (product as any)._id} product={product} index={index} />
           ))}
         </div>
       </div>
