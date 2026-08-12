@@ -25,8 +25,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const blobUploadUrl = process.env.VERCEL_BLOB_UPLOAD_URL;
+    const blobUploadUrl = process.env.VERCEL_BLOB_UPLOAD_URL || 'https://blob.vercel-storage.com';
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const blobStoreId = process.env.BLOB_STORE_ID;
+    const blobEnabled = Boolean(blobUploadUrl && blobToken && blobStoreId);
 
     // Helper to save locally (dev fallback)
     const saveLocally = async (file: File, fileName: string) => {
@@ -38,21 +40,19 @@ export async function POST(req: NextRequest) {
       return `/products/${fileName}`;
     };
 
-    // Helper to upload to an external signed upload URL / service
+    // Helper to upload to Vercel Blob storage
     const uploadToBlob = async (file: File, fileName: string) => {
-      if (!blobUploadUrl || !blobToken) {
+      if (!blobEnabled) {
         throw new Error('Blob upload not configured');
       }
 
-      // Caller should provide a compatible upload endpoint. This implementation
-      // POSTs the file as the request body to `${blobUploadUrl}?name=${fileName}`
-      // with Authorization header. The upload endpoint must return JSON { url }.
-      const uploadUrl = `${blobUploadUrl}?name=${encodeURIComponent(fileName)}`;
+      const uploadUrl = `${blobUploadUrl}/${encodeURIComponent(blobStoreId)}/${encodeURIComponent(fileName)}`;
 
       const res = await fetch(uploadUrl, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${blobToken}`,
+          'Content-Type': file.type || 'application/octet-stream',
         },
         body: await file.arrayBuffer(),
       });
@@ -62,12 +62,7 @@ export async function POST(req: NextRequest) {
         throw new Error(`Blob upload failed: ${res.status} ${text}`);
       }
 
-      const data = await res.json();
-      if (!data || !data.url) {
-        throw new Error('Blob upload response missing url');
-      }
-
-      return data.url as string;
+      return uploadUrl;
     };
 
     const extension = path.extname(mainImage.name) || '.jpg';
