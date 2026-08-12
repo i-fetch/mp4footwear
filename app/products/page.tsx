@@ -41,7 +41,14 @@ function ProductsContent() {
     fetch('/api/products')
       .then((res) => res.json())
       .then((data) => {
-        setAllProducts(data);
+        if (Array.isArray(data)) {
+          setAllProducts(data);
+        } else if (data && Array.isArray((data as any).products)) {
+          setAllProducts((data as any).products);
+        } else {
+          console.error('Unexpected products response:', data);
+          setAllProducts([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -54,7 +61,8 @@ function ProductsContent() {
     ? allProducts
     : allProducts.filter((p) => p.category === selectedCategory);
 
-  const sorted = [...filtered].sort((a, b) => {
+  const safeFiltered = Array.isArray(filtered) ? filtered : [];
+  const sorted = [...safeFiltered].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
         return a.price - b.price;
