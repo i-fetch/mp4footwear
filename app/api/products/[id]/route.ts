@@ -3,13 +3,11 @@ import { Product } from '@/lib/models';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET product by ID
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: any) {
   try {
     await connectDB();
-    const product = await Product.findById(params.id).lean();
+    const resolvedParams = await params;
+    const product = await Product.findById(resolvedParams.id).lean();
 
     if (!product) {
       return NextResponse.json(
@@ -29,15 +27,14 @@ export async function GET(
 }
 
 // UPDATE product
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, { params }: any) {
   try {
     await connectDB();
     const data = await req.json();
 
-    const product = await Product.findByIdAndUpdate(params.id, data, {
+    const resolvedParams = await params;
+
+    const product = await Product.findByIdAndUpdate(resolvedParams.id, data, {
       new: true,
     });
 
@@ -59,13 +56,11 @@ export async function PUT(
 }
 
 // DELETE product
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, { params }: any) {
   try {
     await connectDB();
-    const product = await Product.findByIdAndDelete(params.id);
+    const resolvedParams = await params;
+    const product = await Product.findByIdAndDelete(resolvedParams.id);
 
     if (!product) {
       return NextResponse.json(

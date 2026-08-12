@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -47,10 +48,16 @@ export default function AdminDashboard() {
     router.push('/admin');
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure?')) return;
+  const handleDelete = (id: string) => {
+    // Open confirmation modal instead of native confirm dialog
+    setConfirmingId(id);
+  };
+
+  const handleConfirmDelete = async (id: string) => {
+    setConfirmingId(null);
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
       fetchProducts();
       toast.success('Product deleted');
     } catch (err) {
@@ -189,6 +196,30 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+      {/* Confirmation Modal */}
+      {confirmingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmingId(null)} />
+          <div className="bg-slate-800 rounded-lg p-6 z-10 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-white mb-2">Confirm delete</h3>
+            <p className="text-slate-300 mb-4">Are you sure you want to delete this product? This action cannot be undone.</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmingId(null)}
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleConfirmDelete(confirmingId)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
