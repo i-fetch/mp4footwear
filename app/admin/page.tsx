@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Toaster, toast } from 'sonner';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -32,10 +33,13 @@ export default function AdminLogin() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || 'Something went wrong');
+        const msg = data.error || 'Something went wrong';
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
+      toast.success('Signed in');
       router.push('/admin/dashboard');
     } catch (err) {
       setError('An error occurred');
@@ -47,6 +51,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
+      <Toaster position="top-right" />
       <div className="bg-slate-800 rounded-lg shadow-xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-2 text-white">
           MP4 Admin

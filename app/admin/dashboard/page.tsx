@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LogOut, Plus, Upload } from 'lucide-react';
+import { Toaster, toast } from 'sonner';
 
 interface Product {
   _id: string;
@@ -35,6 +36,7 @@ export default function AdminDashboard() {
     } catch (err) {
       setError('Failed to load products');
       console.error(err);
+      toast.error('Failed to load products');
     } finally {
       setLoading(false);
     }
@@ -50,13 +52,16 @@ export default function AdminDashboard() {
     try {
       await fetch(`/api/products/${id}`, { method: 'DELETE' });
       fetchProducts();
+      toast.success('Product deleted');
     } catch (err) {
       setError('Failed to delete product');
+      toast.error('Failed to delete product');
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-900">
+      <Toaster position="top-right" />
       {/* Header */}
       <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -130,49 +135,54 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700">
-                  {products.map((product) => (
-                    <tr
-                      key={product._id}
-                      className="hover:bg-slate-700 transition"
-                    >
-                      <td className="px-6 py-4 text-sm text-white">
-                        <div className="max-w-[220px] truncate font-medium">{product._id}</div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-300">
-                        {product.brand}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-white font-medium">
-                        ₦{product.price}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-300">
-                        {product.category}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            product.inStock
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-red-500/20 text-red-400'
-                          }`}
-                        >
-                          {product.inStock ? 'In Stock' : 'Out of Stock'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm flex gap-2">
-                        <Link href={`/admin/edit-product/${product._id}`}>
-                          <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition">
-                            Edit
+                  {products.map((product) => {
+                    const productId = (product as any)._id ?? (product as any).id ?? '';
+                    return (
+                      <tr
+                        key={productId}
+                        className="hover:bg-slate-700 transition"
+                      >
+                        <td className="px-6 py-4 text-sm text-white">
+                          <div className="max-w-[220px] truncate font-medium">
+                            {product.name ?? productId}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-300">
+                          {product.brand}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-white font-medium">
+                          ₦{product.price}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-300">
+                          {product.category}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              product.inStock
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-red-500/20 text-red-400'
+                            }`}
+                          >
+                            {product.inStock ? 'In Stock' : 'Out of Stock'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm flex gap-2">
+                          <Link href={`/admin/edit-product/${productId}`}>
+                            <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition">
+                              Edit
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(productId)}
+                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs transition"
+                          >
+                            Delete
                           </button>
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(product._id)}
-                          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs transition"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

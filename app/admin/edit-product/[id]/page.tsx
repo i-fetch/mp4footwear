@@ -34,11 +34,15 @@ export default function EditProduct() {
   });
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setError('Invalid product ID');
+      setLoading(false);
+      return;
+    }
 
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${encodeURIComponent(id)}`);
         if (!res.ok) {
           const data = await res.json();
           throw new Error(data.error || 'Failed to fetch product');
