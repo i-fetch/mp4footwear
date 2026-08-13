@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
+import { put } from '@vercel/blob';
 
 /**
  * Image upload handler
- * - If VERCEL_BLOB_UPLOAD_URL and VERCEL_BLOB_TOKEN are set, attempt to upload each file
- *   to that endpoint (expects a compatible upload URL that returns a JSON { url }).
- * - Otherwise, fall back to writing files into `public/products` (dev/local).
- *
- * Environment variables (set in Vercel or .env):
- * - VERCEL_BLOB_UPLOAD_URL : base upload URL to POST files to (provider-specific)
- * - VERCEL_BLOB_TOKEN : Bearer token for the upload endpoint
+ * - If BLOB_READ_WRITE_TOKEN is set, uploads to Vercel Blob using private access.
+ * - Otherwise, falls back to local storage in `public/products`.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -25,10 +21,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const blobUploadUrl = process.env.VERCEL_BLOB_UPLOAD_URL || 'https://blob.vercel-storage.com';
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-    const blobStoreId = process.env.BLOB_STORE_ID;
-    const blobEnabled = Boolean(blobUploadUrl && blobToken && blobStoreId);
+    const blobEnabled = Boolean(blobToken);
 
     // Helper to save locally (dev fallback)
     const saveLocally = async (file: File, fileName: string) => {
@@ -40,62 +34,42 @@ export async function POST(req: NextRequest) {
       return `/products/${fileName}`;
     };
 
-    // Helper to upload to Vercel Blob storage
+    // Helper to upload to Vercel Blob storage using official SDK
     const uploadToBlob = async (file: File, fileName: string) => {
       if (!blobEnabled) {
         throw new Error('Blob upload not configured');
       }
 
-      const uploadUrl = `${blobUploadUrl}/${encodeURIComponent(blobStoreId)}/${encodeURIComponent(fileName)}`;
-
-      const res = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${blobToken}`,
-          'Content-Type': file.type || 'application/octet-stream',
-        },
-        body: await file.arrayBuffer(),
+      const blob = await put(fileName, file, {
+        access: 'private', // Match your store's private setting
+        token: blobToken,
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Blob upload failed: ${res.status} ${text}`);
-      }
-
-      return uploadUrl;
+      return blob.url;
     };
 
     const extension = path.extname(mainImage.name) || '.jpg';
     const mainImageName = `main-${Date.now()}${extension}`;
+    const useBlob = blobEnabled;
 
-    let mainImageUrl: string;
-    try {
-      mainImageUrl = blobUploadUrl && blobToken
-        ? await uploadToBlob(mainImage, mainImageName)
-        : await saveLocally(mainImage, mainImageName);
-    } catch (err) {
-      console.error('Blob upload failed, falling back to local save:', err);
-      mainImageUrl = await saveLocally(mainImage, mainImageName);
-    }
+    const mainImageUrl = useBlob
+      ? await uploadToBlob(mainImage, mainImageName)
+      : await saveLocally(mainImage, mainImageName);
 
     const additionalImageUrls = await Promise.all(
       additionalImages.map(async (file, index) => {
         const ext = path.extname(file.name) || '.jpg';
         const fileName = `extra-${Date.now()}-${index + 1}${ext}`;
-        try {
-          return blobUploadUrl && blobToken
-            ? await uploadToBlob(file, fileName)
-            : await saveLocally(file, fileName);
-        } catch (err) {
-          console.error('Additional blob upload failed, saving locally:', err);
-          return saveLocally(file, fileName);
-        }
+        return useBlob
+          ? await uploadToBlob(file, fileName)
+          : await saveLocally(file, fileName);
       })
     );
 
     return NextResponse.json({
       mainImage: mainImageUrl,
       images: [mainImageUrl, ...additionalImageUrls],
+      uploadSource: useBlob ? 'blob' : 'local',
     });
   } catch (error) {
     console.error('Image upload error:', error);
