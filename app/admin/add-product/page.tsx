@@ -210,7 +210,7 @@ export default function AddProduct() {
                   <option value="Running">Running</option>
                   <option value="Casual">Casual</option>
                 </select>
-              </div>
+              </div> 
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
