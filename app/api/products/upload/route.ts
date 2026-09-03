@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       }
 
       const blob = await put(fileName, file, {
-        access: 'private', // Match your store's private setting
+        access: 'public', // Match your store's private setting
         token: blobToken,
       });
 
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
       })
     );
 
+    
     return NextResponse.json({
       mainImage: mainImageUrl,
       images: [mainImageUrl, ...additionalImageUrls],
@@ -79,3 +80,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+// BLOB_STORE_ID="store_MuCRb9s4w715OZLK"
+// BLOB_READ_WRITE_TOKEN="vercel_blob_rw_MuCRb9s4w715OZLK_NrJPocWyBS5DLbaAPZpVukgp81vj5Z"

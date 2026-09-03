@@ -210,7 +210,7 @@ export default function AddProduct() {
                   <option value="Handmade Footwear">Handmade Footwear</option>
                   <option value="Handmade Sandals">Handmade Sandals</option>
                 </select>
-              </div>
+              </div> 
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
