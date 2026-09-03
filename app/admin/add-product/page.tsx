@@ -205,10 +205,10 @@ export default function AddProduct() {
                   className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 >
                   <option value="">Select category</option>
-                  <option value="Performance">Performance</option>
-                  <option value="Classic">Classic</option>
-                  <option value="Running">Running</option>
-                  <option value="Casual">Casual</option>
+                  <option value="Handmade Footwear">Handmade Footwear</option>
+                  <option value="Foreign Sandals">Foreign Sandals</option>
+                  <option value="Handmade Footwear">Handmade Footwear</option>
+                  <option value="Handmade Sandals">Handmade Sandals</option>
                 </select>
               </div>
 
