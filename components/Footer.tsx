@@ -47,10 +47,10 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold">Company</h4>
             <div className="space-y-2 text-sm text-background/75">
-              <Link href="/" className="block hover:text-background transition-colors">
+              <Link href="/about" className="block hover:text-background transition-colors">
                 About Us
               </Link>
-              <Link href="/" className="block hover:text-background transition-colors">
+              <Link href="/contact" className="block hover:text-background transition-colors">
                 Contact
               </Link>
              

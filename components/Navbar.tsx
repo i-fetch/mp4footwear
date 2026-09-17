@@ -38,18 +38,18 @@ export function Navbar() {
               >
                 Collections
               </Link>
-              <a
-                href="#about"
+              <Link
+                href="/about"
                 className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
               >
                 About
-              </a>
-              <a
-                href="#contact"
+              </Link>
+              <Link
+                href="/contact"
                 className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
               >
                 Contact
-              </a>
+              </Link>
             </div>
 
             {/* Right Side Actions */}
@@ -98,18 +98,18 @@ export function Navbar() {
               >
                 Collections
               </Link>
-              <a
-                href="#about"
+              <Link
+                href="/about"
                 className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
               >
                 About
-              </a>
-              <a
-                href="#contact"
+              </Link>
+              <Link
+                href="/contact"
                 className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
               >
                 Contact
-              </a>
+              </Link>
             </div>
           )}
         </div>
