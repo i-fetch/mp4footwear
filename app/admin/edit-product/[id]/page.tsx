@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { SiteLoader } from '@/components/SiteLoader';
 
 export default function EditProduct() {
   const router = useRouter();
@@ -180,6 +181,10 @@ export default function EditProduct() {
     );
   }
 
+  if (loading) {
+    return <SiteLoader message="Loading product details" />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 p-4">
       <div className="max-w-4xl mx-auto">
@@ -193,10 +198,7 @@ export default function EditProduct() {
             </div>
           )}
 
-          {loading ? (
-            <div className="text-slate-400">Loading product data...</div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -432,8 +434,7 @@ export default function EditProduct() {
                   </Button>
                 </Link>
               </div>
-            </form>
-          )}
+          </form>
         </div>
       </div>
     </div>

@@ -99,7 +99,7 @@ export default function PageWrapper({ params }: PageProps) {
   if (loading) {
     return (
       <CartProvider>
-        <SiteLoader />
+        <SiteLoader message="Finding your pair" />
       </CartProvider>
     );
   }

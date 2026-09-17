@@ -5,6 +5,7 @@ import { ProductCard } from './ProductCard';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { SiteLoader } from './SiteLoader';
 
 interface Product {
   _id: string;
@@ -53,13 +54,7 @@ export function FeaturedProducts() {
   }, []);
 
   if (loading) {
-    return (
-      <section id="featured" className="w-full py-20 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 text-center text-muted-foreground">
-          Loading featured products...
-        </div>
-      </section>
-    );
+    return <SiteLoader message="Selecting featured pairs" />;
   }
 
   return (

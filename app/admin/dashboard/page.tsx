@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LogOut, Plus, Upload } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
+import { SiteLoader } from '@/components/SiteLoader';
 
 interface Product {
   _id: string;
@@ -66,6 +67,10 @@ export default function AdminDashboard() {
     }
   };
 
+  if (loading) {
+    return <SiteLoader message="Loading your product workspace" />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900">
       <Toaster position="top-right" />
@@ -110,9 +115,7 @@ export default function AdminDashboard() {
 
         {/* Products Table */}
         <div className="bg-slate-800 rounded-lg overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center text-slate-400">Loading...</div>
-          ) : products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="p-8 text-center text-slate-400">
               No products yet. Add one to get started!
             </div>

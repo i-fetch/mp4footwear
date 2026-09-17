@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { SiteLoader } from '@/components/SiteLoader';
 
 interface Product {
   _id: string;
@@ -75,21 +76,15 @@ function ProductsContent() {
     }
   });
 
+  if (loading) {
+    return <SiteLoader message="Curating the collection" />;
+  }
+
   return (
     <>
       <Navbar />
       <main className="w-full min-h-screen bg-background">
-        {/* Loading State */}
-        {loading && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="text-center text-muted-foreground">
-              Loading products...
-            </div>
-          </div>
-        )}
-
         {/* Header */}
-        {!loading && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
             <div>
@@ -161,7 +156,6 @@ function ProductsContent() {
             </p>
           </div>
         </div>
-        )}
       </main>
       <Footer />
     </>
