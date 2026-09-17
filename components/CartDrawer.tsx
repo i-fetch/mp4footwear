@@ -66,7 +66,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       layout
                       className="flex gap-4 pb-6 border-b border-border"
                     >
-                      <div className="relative w-20 h-20 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="relative w-20 h-20 bg-secondary rounded-lg overflow-hidden shrink-0">
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -123,9 +123,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <span>Total:</span>
                   <span>₦{total.toFixed(2)}</span>
                 </div>
-                <button className="w-full bg-foreground text-background py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                <Link
+                  href="/checkout"
+                  onClick={onClose}
+                  className="block w-full bg-foreground text-background py-3 rounded-lg font-semibold text-center hover:opacity-90 transition-opacity"
+                >
                   Checkout
-                </button>
+                </Link>
                 <button
                   onClick={() => {
                     clearCart();

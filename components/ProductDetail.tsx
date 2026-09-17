@@ -38,8 +38,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
+    const productId = product._id || product.id;
+    if (!productId || !selectedSize) return;
+
     addItem({
-      productId: product.id,
+      productId,
       name: product.name,
       price: product.price,
       size: selectedSize,
@@ -213,21 +216,21 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {/* Benefits */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-border">
           <div className="flex items-start gap-3">
-            <Truck className="w-5 h-5 text-foreground flex-shrink-0 mt-1" />
+            <Truck className="w-5 h-5 text-foreground shrink-0 mt-1" />
             <div>
               <p className="font-medium text-foreground">Free Shipping</p>
               <p className="text-sm text-muted-foreground">On orders over ₦20000</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-foreground flex-shrink-0 mt-1" />
+            <Shield className="w-5 h-5 text-foreground shrink-0 mt-1" />
             <div>
               <p className="font-medium text-foreground">Secure Checkout</p>
               <p className="text-sm text-muted-foreground">100% protected</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <RotateCcw className="w-5 h-5 text-foreground flex-shrink-0 mt-1" />
+            <RotateCcw className="w-5 h-5 text-foreground shrink-0 mt-1" />
             <div>
               <p className="font-medium text-foreground">Easy Returns</p>
               <p className="text-sm text-muted-foreground">30-day guarantee</p>
