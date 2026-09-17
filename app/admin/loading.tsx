@@ -1,5 +1,5 @@
 import { SiteLoader } from '@/components/SiteLoader';
 
 export default function Loading() {
-  return <SiteLoader message="Preparing your next pair" />;
+  return <SiteLoader message="Opening your workspace" />;
 }

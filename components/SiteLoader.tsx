@@ -1,4 +1,8 @@
-export function SiteLoader() {
+interface SiteLoaderProps {
+  message?: string;
+}
+
+export function SiteLoader({ message = 'Preparing your next pair' }: SiteLoaderProps) {
   return (
     <main className="site-loader" aria-label="Loading MP4 Footwear">
       <div className="site-loader__glow" aria-hidden="true" />
@@ -10,7 +14,7 @@ export function SiteLoader() {
 
         <div className="site-loader__copy">
           <p className="site-loader__eyebrow">MP4 Footwear</p>
-          <p className="site-loader__status">Preparing your next pair</p>
+          <p className="site-loader__status">{message}</p>
         </div>
 
         <div className="site-loader__progress" aria-hidden="true">
