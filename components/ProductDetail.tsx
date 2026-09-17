@@ -216,7 +216,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <Truck className="w-5 h-5 text-foreground flex-shrink-0 mt-1" />
             <div>
               <p className="font-medium text-foreground">Free Shipping</p>
-              <p className="text-sm text-muted-foreground">On orders over ₦100</p>
+              <p className="text-sm text-muted-foreground">On orders over ₦20000</p>
             </div>
           </div>
           <div className="flex items-start gap-3">

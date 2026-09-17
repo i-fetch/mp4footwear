@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { SiteLoader } from '@/components/SiteLoader';
 
 interface Product {
   _id: string;
@@ -98,11 +99,7 @@ export default function PageWrapper({ params }: PageProps) {
   if (loading) {
     return (
       <CartProvider>
-        <Navbar />
-        <main className="w-full min-h-screen bg-background flex items-center justify-center">
-          <div className="text-muted-foreground">Loading...</div>
-        </main>
-        <Footer />
+        <SiteLoader />
       </CartProvider>
     );
   }

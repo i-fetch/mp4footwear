@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const extension = path.extname(mainImage.name) || '.jpg';
     const mainImageName = `main-${Date.now()}${extension}`;
-    const useBlob = blobEnabled;
+    const useBlob = blobEnabled; 
 
     const mainImageUrl = useBlob
       ? await uploadToBlob(mainImage, mainImageName)
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    
+
     return NextResponse.json({
       mainImage: mainImageUrl,
       images: [mainImageUrl, ...additionalImageUrls],
