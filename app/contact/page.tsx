@@ -44,7 +44,7 @@ function ContactContent() {
                     <span className="group-hover:underline">+234 905 776 9271</span>
                   </span>
                 </a>
-                <a href="mailto:hello@mp4-footwear.com" className="flex items-start gap-4 group">
+                <a href="mailto:Mp4Footwears@proton.me" className="flex items-start gap-4 group">
                   <Mail className="w-5 h-5 mt-1 shrink-0" aria-hidden="true" />
                   <span>
                     <span className="block text-sm text-muted-foreground mb-1">Email us</span>
