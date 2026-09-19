@@ -207,8 +207,7 @@ export default function AddProduct() {
                   <option value="">Select category</option>
                   <option value="Handmade Footwear">Handmade Footwear</option>
                   <option value="Foreign Sandals">Foreign Sandals</option>
-                  <option value="Handmade Footwear">Handmade Footwear</option>
-                  <option value="Handmade Sandals">Handmade Sandals</option>
+                  <option value="Handmade Sandal">Handmade Sandal</option>
                 </select>
               </div> 
 

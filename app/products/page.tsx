@@ -30,7 +30,7 @@ interface Product {
   inStock: boolean;
 }
 
-const categories = ['All', 'Performance', 'Classic', 'Running', 'Casual'];
+const categories = ['All', 'Handmade Footwear', 'Foreign Sandals', 'Handmade Sandal'];
 
 function ProductsContent() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
