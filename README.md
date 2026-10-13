@@ -49,6 +49,21 @@ and `charge.failed` events, and ensure the deployed application is served over
 HTTPS. Keep the secret key only in server environment settings. Do not add real
 credentials to `.env.example` or commit `.env.local`.
 
+## Order tracking
+
+Each new checkout receives a public order reference and a separate private
+tracking code. The raw tracking code is returned once to the checkout browser
+and kept in that tab's session storage; only its hash is stored with the order.
+Customers need both values at `/track-order`. Older orders that predate these
+fields can be tracked using their Paystack payment reference and both the
+checkout email and phone; after verification, a public order reference is
+assigned for future lookups. The order tracking API is rate-limited using
+MongoDB-backed per-IP counters. Administrators can manage fulfillment and
+shipping updates from `/admin/orders` after signing in.
+
+This project does not currently have an email delivery provider. Order and
+shipping notifications are therefore not sent by email.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Learn More

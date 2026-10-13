@@ -50,6 +50,12 @@ export function Navbar() {
               >
                 Contact
               </Link>
+              <Link
+                href="/track-order"
+                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
+              >
+                Track Order
+              </Link>
             </div>
 
             {/* Right Side Actions */}
@@ -109,6 +115,12 @@ export function Navbar() {
                 className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
               >
                 Contact
+              </Link>
+              <Link
+                href="/track-order"
+                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
+              >
+                Track Order
               </Link>
             </div>
           )}

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LogOut, Plus, Upload } from 'lucide-react';
+import { LogOut, PackageSearch, Plus, Upload } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import { SiteLoader } from '@/components/SiteLoader';
 
@@ -102,6 +102,12 @@ export default function AdminDashboard() {
             <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
               <Upload size={18} />
               Upload CSV
+            </Button>
+          </Link>
+          <Link href="/admin/orders">
+            <Button className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700">
+              <PackageSearch size={18} />
+              Manage Orders
             </Button>
           </Link>
         </div>

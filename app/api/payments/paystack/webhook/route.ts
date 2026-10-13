@@ -73,7 +73,13 @@ export async function POST(request: NextRequest) {
         await markPaystackPaymentFailed(reference);
       }
     } catch (error) {
-      console.error('Paystack webhook processing error:', error);
+      console.error('Paystack webhook processing error', {
+        reason:
+          error instanceof PaystackApiError
+            ? error.diagnosticCode
+            : 'webhook_processing_error',
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
       return NextResponse.json(
         {
           error:

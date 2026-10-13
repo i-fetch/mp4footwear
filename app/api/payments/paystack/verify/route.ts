@@ -12,6 +12,9 @@ export async function GET(request: NextRequest) {
     request.nextUrl.searchParams.get('reference') ||
     request.nextUrl.searchParams.get('trxref');
   if (!reference || !/^[A-Za-z0-9_-]{8,100}$/.test(reference)) {
+    console.warn('Paystack verification request rejected', {
+      reason: 'missing_or_invalid_reference',
+    });
     return NextResponse.json(
       { error: 'A valid Paystack payment reference is required.' },
       { status: 400 }
@@ -24,15 +27,18 @@ export async function GET(request: NextRequest) {
       {
         paymentStatus: result.paymentStatus,
         message: result.message,
-        orderId: result.orderId,
+        orderReference: result.orderReference,
         amountKobo: result.amountKobo,
         currency: result.currency,
       },
       { status: result.httpStatus }
     );
   } catch (error) {
-    console.error('Paystack verification error:', error);
     const isPaystackError = error instanceof PaystackApiError;
+    console.error('Paystack verification request failed', {
+      reason: isPaystackError ? error.diagnosticCode : 'verification_internal_error',
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    });
     return NextResponse.json(
       {
         error:

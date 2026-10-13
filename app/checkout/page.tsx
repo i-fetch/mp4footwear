@@ -113,10 +113,19 @@ function CheckoutContent() {
       });
       const result = (await response.json()) as {
         authorizationUrl?: string;
+        orderReference?: string;
+        trackingCode?: string;
+        paystackReference?: string;
         error?: string;
       };
 
-      if (!response.ok || !result.authorizationUrl) {
+      if (
+        !response.ok ||
+        !result.authorizationUrl ||
+        !result.orderReference ||
+        !result.trackingCode ||
+        !result.paystackReference
+      ) {
         throw new Error(result.error || 'Unable to start your payment. Please try again.');
       }
 
@@ -127,6 +136,14 @@ function CheckoutContent() {
       ) {
         throw new Error('Paystack returned an invalid checkout link.');
       }
+      sessionStorage.setItem(
+        `mp4-order-tracking:${result.orderReference}`,
+        result.trackingCode
+      );
+      sessionStorage.setItem(
+        `mp4-payment-order:${result.paystackReference}`,
+        result.orderReference
+      );
       window.location.assign(checkoutUrl.toString());
     } catch (error) {
       setPaymentError(

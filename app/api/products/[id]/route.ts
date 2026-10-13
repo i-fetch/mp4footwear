@@ -35,7 +35,7 @@ export async function PUT(req: NextRequest, { params }: any) {
     const resolvedParams = await params;
 
     const product = await Product.findByIdAndUpdate(resolvedParams.id, data, {
-      new: true,
+      returnDocument: 'after',
     });
 
     if (!product) {

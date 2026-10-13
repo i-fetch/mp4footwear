@@ -7,6 +7,8 @@ interface PaystackTransaction {
   reference: string;
   status: string;
   amount: number;
+  requested_amount?: number;
+  fees?: number | null;
   currency: string;
   customer?: { email?: string };
   metadata?: { order_id?: string };
@@ -19,7 +21,10 @@ interface PaystackEnvelope<T> {
 }
 
 export class PaystackApiError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly diagnosticCode: string
+  ) {
     super(message);
     this.name = 'PaystackApiError';
   }
@@ -39,7 +44,7 @@ async function paystackRequest<T>(
 ): Promise<T> {
   const secret = getPaystackSecret();
   if (!secret) {
-    throw new PaystackApiError('Paystack is not configured.');
+    throw new PaystackApiError('Paystack is not configured.', 'missing_secret_key');
   }
 
   let response: Response;
@@ -55,18 +60,39 @@ async function paystackRequest<T>(
       signal: AbortSignal.timeout(15000),
     });
   } catch {
-    throw new PaystackApiError('Could not connect to Paystack.');
+    console.error('Paystack API request failed', {
+      reason: 'network_error',
+      endpoint: path.startsWith('/transaction/verify/') ? 'verify' : 'initialize',
+    });
+    throw new PaystackApiError('Could not connect to Paystack.', 'network_error');
   }
 
   let envelope: PaystackEnvelope<T> | null = null;
   try {
     envelope = (await response.json()) as PaystackEnvelope<T>;
   } catch {
-    throw new PaystackApiError('Paystack returned an invalid response.');
+    console.error('Paystack API request failed', {
+      reason: 'invalid_json_response',
+      endpoint: path.startsWith('/transaction/verify/') ? 'verify' : 'initialize',
+      httpStatus: response.status,
+    });
+    throw new PaystackApiError(
+      'Paystack returned an invalid response.',
+      'invalid_json_response'
+    );
   }
 
   if (!response.ok || !envelope.status || !envelope.data) {
-    throw new PaystackApiError('Paystack could not process the request.');
+    console.error('Paystack API request rejected', {
+      reason: 'provider_rejected_request',
+      endpoint: path.startsWith('/transaction/verify/') ? 'verify' : 'initialize',
+      httpStatus: response.status,
+      providerAccepted: envelope.status,
+    });
+    throw new PaystackApiError(
+      'Paystack could not process the request.',
+      'provider_rejected_request'
+    );
   }
 
   return envelope.data;
@@ -120,7 +146,7 @@ export type PaymentVerification = {
   httpStatus: number;
   paymentStatus: 'PAID' | 'PENDING' | 'FAILED' | 'CANCELLED';
   message: string;
-  orderId?: string;
+  orderReference?: string;
   amountKobo?: number;
   currency?: string;
 };
@@ -129,7 +155,7 @@ export async function verifyAndApplyPaystackPayment(
   reference: string
 ): Promise<PaymentVerification> {
   if (!getPaystackSecret()) {
-    throw new PaystackApiError('Paystack is not configured.');
+    throw new PaystackApiError('Paystack is not configured.', 'missing_secret_key');
   }
 
   await connectDB();
@@ -137,6 +163,9 @@ export async function verifyAndApplyPaystackPayment(
     'paymentAttempts.reference': reference,
   });
   if (!order) {
+    console.warn('Paystack verification did not match an order', {
+      reason: 'order_not_found_for_reference',
+    });
     return {
       httpStatus: 404,
       paymentStatus: 'FAILED',
@@ -148,6 +177,9 @@ export async function verifyAndApplyPaystackPayment(
     (payment: { reference: string }) => payment.reference === reference
   );
   if (!attempt) {
+    console.warn('Paystack verification did not match a payment attempt', {
+      reason: 'attempt_not_found_for_reference',
+    });
     return {
       httpStatus: 404,
       paymentStatus: 'FAILED',
@@ -162,6 +194,7 @@ export async function verifyAndApplyPaystackPayment(
         httpStatus: 409,
         paymentStatus: 'FAILED',
         message: 'This order has already been paid using another transaction.',
+        orderReference: order.orderReference || order.paystackReference,
       };
     }
 
@@ -169,7 +202,7 @@ export async function verifyAndApplyPaystackPayment(
       httpStatus: 200,
       paymentStatus: 'PAID',
       message: 'Payment verified.',
-      orderId,
+      orderReference: order.orderReference || order.paystackReference,
       amountKobo: order.amountKobo,
       currency: order.currency,
     };
@@ -177,10 +210,14 @@ export async function verifyAndApplyPaystackPayment(
 
   const transaction = await verifyPaystackTransaction(reference);
   if (transaction.reference !== reference) {
+    console.warn('Paystack transaction verification rejected', {
+      reason: 'verified_reference_mismatch',
+    });
     return {
       httpStatus: 409,
       paymentStatus: 'FAILED',
       message: 'The transaction reference could not be verified.',
+      orderReference: order.orderReference || order.paystackReference,
     };
   }
 
@@ -189,7 +226,7 @@ export async function verifyAndApplyPaystackPayment(
     const isCancelled = transaction.status === 'abandoned';
     if (isFailed || isCancelled) {
       const paymentStatus = isCancelled ? 'CANCELLED' : 'FAILED';
-      await Order.updateOne(
+      const update = await Order.updateOne(
         {
           _id: order._id,
           paymentStatus: { $ne: 'PAID' },
@@ -202,40 +239,91 @@ export async function verifyAndApplyPaystackPayment(
           },
         }
       );
+      if (update.matchedCount !== 1) {
+        console.error('Paystack payment status update did not match an order', {
+          reason: 'failure_status_update_no_match',
+        });
+      }
+      console.warn('Paystack transaction is not successful', {
+        reason: isCancelled ? 'transaction_abandoned' : 'transaction_failed',
+        transactionStatus: transaction.status,
+      });
       return {
         httpStatus: 200,
         paymentStatus,
         message: isCancelled
           ? 'The payment was abandoned. You can return to checkout and try again.'
           : 'Paystack reported that this payment failed. You can try again at checkout.',
-        orderId,
+        orderReference: order.orderReference || order.paystackReference,
         amountKobo: order.amountKobo,
         currency: order.currency,
       };
     }
 
+    console.info('Paystack transaction is awaiting confirmation', {
+      reason: 'transaction_not_final',
+      transactionStatus: transaction.status,
+    });
     return {
       httpStatus: 200,
       paymentStatus: 'PENDING',
       message: 'Payment is not yet confirmed. Check again shortly.',
-      orderId,
+      orderReference: order.orderReference || order.paystackReference,
       amountKobo: order.amountKobo,
       currency: order.currency,
     };
   }
 
   const customerEmail = order.customer.email.toLowerCase();
+  const requestedAmountKobo =
+    transaction.requested_amount ?? transaction.amount;
+  const amountFieldsAreValid =
+    Number.isSafeInteger(transaction.amount) &&
+    transaction.amount > 0 &&
+    Number.isSafeInteger(requestedAmountKobo) &&
+    requestedAmountKobo > 0 &&
+    transaction.amount >= requestedAmountKobo &&
+    (transaction.fees == null ||
+      (Number.isSafeInteger(transaction.fees) &&
+        transaction.fees >= 0 &&
+        transaction.amount - requestedAmountKobo === transaction.fees));
   if (
-    transaction.metadata?.order_id !== orderId ||
-    transaction.amount !== attempt.amountKobo ||
-    transaction.currency !== 'NGN' ||
-    transaction.customer?.email?.toLowerCase() !== customerEmail
+    (transaction.metadata?.order_id !== undefined &&
+      transaction.metadata.order_id !== orderId) ||
+    !amountFieldsAreValid ||
+    requestedAmountKobo !== attempt.amountKobo ||
+    requestedAmountKobo !== order.amountKobo ||
+    transaction.currency !== order.currency ||
+    order.currency !== 'NGN' ||
+    (transaction.customer?.email !== undefined &&
+      transaction.customer.email.toLowerCase() !== customerEmail)
   ) {
+    const reason =
+      !amountFieldsAreValid
+        ? 'invalid_amount_or_fee_fields'
+        : requestedAmountKobo !== attempt.amountKobo ||
+            requestedAmountKobo !== order.amountKobo
+        ? 'amount_mismatch'
+        : transaction.currency !== order.currency || order.currency !== 'NGN'
+          ? 'currency_mismatch'
+          : transaction.metadata?.order_id !== undefined &&
+              transaction.metadata.order_id !== orderId
+            ? 'metadata_order_mismatch'
+            : 'customer_email_mismatch';
+    console.error('Paystack transaction verification rejected', {
+      reason,
+      transactionStatus: transaction.status,
+      expectedAmountKobo: order.amountKobo,
+      attemptAmountKobo: attempt.amountKobo,
+      requestedAmountKobo,
+      chargedAmountKobo: transaction.amount,
+      feesKobo: transaction.fees ?? null,
+    });
     return {
       httpStatus: 409,
       paymentStatus: 'FAILED',
       message: 'The payment details do not match this order. Contact support before retrying.',
-      orderId,
+      orderReference: order.orderReference || order.paystackReference,
     };
   }
 
@@ -266,11 +354,14 @@ export async function verifyAndApplyPaystackPayment(
       currentOrder?.paymentStatus !== 'PAID' ||
       currentOrder.paystackReference !== reference
     ) {
+      console.error('Paystack verified payment was not applied to order', {
+        reason: update.matchedCount === 0 ? 'paid_status_update_no_match' : 'paid_status_conflict',
+      });
       return {
         httpStatus: 409,
         paymentStatus: 'FAILED',
         message: 'This order could not be updated with the verified payment.',
-        orderId,
+        orderReference: order.orderReference || order.paystackReference,
       };
     }
   }
@@ -279,7 +370,7 @@ export async function verifyAndApplyPaystackPayment(
     httpStatus: 200,
     paymentStatus: 'PAID',
     message: 'Payment verified.',
-    orderId,
+    orderReference: order.orderReference || order.paystackReference,
     amountKobo: order.amountKobo,
     currency: order.currency,
   };

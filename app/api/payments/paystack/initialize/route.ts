@@ -3,6 +3,11 @@ import { isObjectIdOrHexString } from 'mongoose';
 import { connectDB } from '@/lib/mongodb';
 import { Order, Product } from '@/lib/models';
 import {
+  createOrderReference,
+  createTrackingCode,
+  hashTrackingCode,
+} from '@/lib/orderTracking';
+import {
   createPaystackReference,
   getPaystackSecret,
   initializePaystackTransaction,
@@ -165,7 +170,11 @@ export async function POST(request: NextRequest) {
     }
 
     const reference = createPaystackReference();
+    const orderReference = createOrderReference();
+    const trackingCode = createTrackingCode();
     const order = await Order.create({
+      orderReference,
+      trackingTokenHash: hashTrackingCode(trackingCode),
       customer: { name, email, phone },
       delivery: { address, city },
       items: orderItems,
@@ -176,6 +185,10 @@ export async function POST(request: NextRequest) {
       paystackReference: reference,
       paymentAttempts: [
         { reference, amountKobo, status: 'INITIALIZING' },
+      ],
+      fulfillmentStatus: 'PROCESSING',
+      trackingUpdates: [
+        { status: 'PROCESSING', message: 'Order received and is being processed.' },
       ],
     });
 
@@ -195,7 +208,10 @@ export async function POST(request: NextRequest) {
         authorizationUrl.protocol !== 'https:' ||
         authorizationUrl.hostname !== 'checkout.paystack.com'
       ) {
-        throw new PaystackApiError('Paystack returned invalid checkout details.');
+        throw new PaystackApiError(
+          'Paystack returned invalid checkout details.',
+          'invalid_checkout_details'
+        );
       }
 
       await Order.updateOne(
@@ -204,6 +220,9 @@ export async function POST(request: NextRequest) {
       );
       return NextResponse.json({
         authorizationUrl: authorizationUrl.toString(),
+        orderReference,
+        trackingCode,
+        paystackReference: reference,
       });
     } catch (error) {
       await Order.updateOne(
@@ -215,14 +234,23 @@ export async function POST(request: NextRequest) {
           },
         }
       );
-      console.error('Paystack initialization error:', error);
+      console.error('Paystack initialization error', {
+        reason:
+          error instanceof PaystackApiError
+            ? error.diagnosticCode
+            : 'initialization_internal_error',
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
       return NextResponse.json(
         { error: 'Unable to start payment with Paystack. Please try again.' },
         { status: 502 }
       );
     }
   } catch (error) {
-    console.error('Checkout initialization error:', error);
+    console.error('Checkout initialization error', {
+      reason: 'order_creation_or_database_error',
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    });
     return NextResponse.json(
       { error: 'Unable to create your order right now. Please try again.' },
       { status: 500 }

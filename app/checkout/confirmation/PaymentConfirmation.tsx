@@ -10,7 +10,7 @@ import { Navbar } from '@/components/Navbar';
 interface VerificationResult {
   paymentStatus: 'PAID' | 'PENDING' | 'FAILED' | 'CANCELLED';
   message: string;
-  orderId?: string;
+  orderReference?: string;
   amountKobo?: number;
 }
 
@@ -22,6 +22,8 @@ function ConfirmationContent({ reference }: { reference: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [checkNumber, setCheckNumber] = useState(0);
+  const [trackingCode, setTrackingCode] = useState<string | null>(null);
+  const [savedOrderReference, setSavedOrderReference] = useState<string | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -33,6 +35,16 @@ function ConfirmationContent({ reference }: { reference: string }) {
         setError('No Paystack payment reference was provided.');
         setIsVerifying(false);
         return;
+      }
+
+      const savedReference = sessionStorage.getItem(
+        `mp4-payment-order:${reference}`
+      );
+      if (savedReference) {
+        setSavedOrderReference(savedReference);
+        setTrackingCode(
+          sessionStorage.getItem(`mp4-order-tracking:${savedReference}`)
+        );
       }
 
       try {
@@ -49,6 +61,14 @@ function ConfirmationContent({ reference }: { reference: string }) {
           const verifiedResult = body as VerificationResult;
           setResult(verifiedResult);
           if (verifiedResult.paymentStatus === 'PAID') clearCartRef.current();
+          if (verifiedResult.orderReference) {
+            setSavedOrderReference(verifiedResult.orderReference);
+            setTrackingCode(
+              sessionStorage.getItem(
+                `mp4-order-tracking:${verifiedResult.orderReference}`
+              )
+            );
+          }
         } else {
           setError(body.error || 'Unable to verify this payment right now.');
         }
@@ -68,6 +88,7 @@ function ConfirmationContent({ reference }: { reference: string }) {
   }, [reference, checkNumber]);
 
   const paid = result?.paymentStatus === 'PAID';
+  const orderReference = result?.orderReference || savedOrderReference;
   const pending =
     !error &&
     (isVerifying || !result || result.paymentStatus === 'PENDING');
@@ -103,12 +124,29 @@ function ConfirmationContent({ reference }: { reference: string }) {
               ? 'We are verifying the transaction directly with Paystack. Please keep this page open.'
               : result?.message || error}
           </p>
-          {paid && result?.orderId && (
+          {orderReference && (
             <p className="mt-3 text-sm text-muted-foreground">
-              Order reference: {result.orderId}
-              {typeof result.amountKobo === 'number' &&
+              {orderReference.startsWith('MP4-')
+                ? 'Order reference: '
+                : 'Payment reference for order tracking: '}
+              <strong>{orderReference}</strong>
+              {trackingCode && (
+                <>
+                  {' · Private tracking code: '}
+                  <strong>{trackingCode}</strong>
+                </>
+              )}
+              {paid && typeof result.amountKobo === 'number' &&
                 ` · ₦${(result.amountKobo / 100).toFixed(2)}`}
             </p>
+          )}
+          {orderReference && (
+            <Link
+              href={`/track-order?reference=${encodeURIComponent(orderReference)}`}
+              className="mt-4 inline-flex text-sm font-semibold underline"
+            >
+              Track this order
+            </Link>
           )}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             {!isVerifying && !paid && (
