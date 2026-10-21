@@ -14,117 +14,61 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="text-2xl font-bold tracking-tighter text-foreground">
-                MP4 Footwear
-              </div>
-            </Link>
+      <div className="store-announcement">
+        <span>Crafted for the way you move</span>
+        <span className="store-announcement__divider" />
+        <span>Complimentary delivery on orders over ₦20,000</span>
+      </div>
+      <nav className="store-nav">
+        <div className="store-nav__inner">
+          <Link href="/" className="store-brand" aria-label="MP4 Footwear home">
+            <span className="store-brand__mark">MP4</span>
+            <span className="store-brand__name">FOOTWEAR</span>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              <Link
-                href="/products"
-                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Shop
-              </Link>
-              <Link
-                href="/"
-                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Collections
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/track-order"
-                className="text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Track Order
-              </Link>
-            </div>
-
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-4">
-              <button className="p-2 hover:bg-secondary rounded-lg transition-colors hidden sm:block">
-                <Search className="w-5 h-5 text-foreground" />
-              </button>
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 hover:bg-secondary rounded-lg transition-colors"
-              >
-                <ShoppingBag className="w-5 h-5 text-foreground" />
-                {cartCount > 0 && (
-                  <span className="absolute top-1 right-1 w-5 h-5 bg-foreground text-background text-xs font-bold rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
-              >
-                {isMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            </div>
+          <div className="store-nav__links">
+            <Link href="/products" className="store-nav__link">Shop</Link>
+            <Link href="/" className="store-nav__link">Collections</Link>
+            <Link href="/about" className="store-nav__link">About</Link>
+            <Link href="/contact" className="store-nav__link">Contact</Link>
           </div>
 
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden pb-4 border-t border-border">
-              <Link
-                href="/products"
-                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Shop
-              </Link>
-              <Link
-                href="/"
-                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Collections
-              </Link>
-              <Link
-                href="/about"
-                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/track-order"
-                className="block py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
-              >
-                Track Order
-              </Link>
-            </div>
-          )}
+          <div className="store-nav__actions">
+            <Link href="/products" className="store-nav__icon" aria-label="Browse footwear">
+              <Search className="h-4.5 w-4.5" />
+            </Link>
+            <Link href="/track-order" className="store-nav__track">Track order</Link>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="store-nav__icon store-nav__bag"
+              aria-label={`Open shopping bag${cartCount ? `, ${cartCount} items` : ''}`}
+            >
+              <ShoppingBag className="h-4.5 w-4.5" />
+              {cartCount > 0 && <span className="store-nav__count">{cartCount}</span>}
+            </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="store-nav__icon store-nav__menu"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? (
+                <X className="h-4.5 w-4.5" />
+              ) : (
+                <Menu className="h-4.5 w-4.5" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {isMenuOpen && (
+          <div className="store-nav__mobile-links">
+            <Link href="/products" onClick={() => setIsMenuOpen(false)}>Shop the collection</Link>
+            <Link href="/about" onClick={() => setIsMenuOpen(false)}>Our story</Link>
+            <Link href="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+            <Link href="/track-order" onClick={() => setIsMenuOpen(false)}>Track an order</Link>
+          </div>
+        )}
       </nav>
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>

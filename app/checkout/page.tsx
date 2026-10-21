@@ -179,7 +179,7 @@ function CheckoutContent() {
   return (
     <>
       <Navbar />
-      <main className="bg-background px-4 py-12 md:py-20">
+      <main className="checkout-page bg-background px-4 py-12 md:py-20">
         <div className="mx-auto max-w-7xl">
           <Link href="/products" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -245,7 +245,7 @@ function CheckoutContent() {
               </form>
             </section>
 
-            <aside className="h-fit border border-border p-6 lg:sticky lg:top-24">
+            <aside className="checkout-summary h-fit border border-border p-6 lg:sticky lg:top-24">
               <h2 className="text-xl font-bold">Order summary</h2>
               <div className="mt-6 divide-y divide-border">
                 {items.map((item) => {

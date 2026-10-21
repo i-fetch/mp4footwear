@@ -2,9 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingBag } from 'lucide-react';
+import { Star, ArrowUpRight, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { useCart } from '@/lib/cartContext';
 
 interface Product {
@@ -35,7 +34,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const [isHovering, setIsHovering] = useState(false);
   const { addItem } = useCart();
   const productId = product._id || product.id || '';
   const discount = product.originalPrice
@@ -61,75 +59,65 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="group"
+      className="product-card group"
     >
-      <Link href={`/products/${productId}`}>
-        <div
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-          className="relative w-full aspect-square bg-secondary rounded-lg overflow-hidden mb-4"
-        >
+      <div className="product-card__media mb-4">
+        <Link href={`/products/${productId}`} className="product-card__visual">
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="product-card__image object-cover"
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 24vw"
           />
 
-          {/* Discount Badge */}
           {discount > 0 && (
-            <div className="absolute top-4 left-4 bg-foreground text-background px-3 py-1 rounded-full text-xs font-bold">
+            <div className="absolute left-3 top-3 bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent-foreground">
               -{discount}%
             </div>
           )}
 
-          {/* Category Badge */}
-          <div className="absolute top-4 right-4 bg-background/90 backdrop-blur px-3 py-1 rounded-full text-xs font-medium">
+          <div className="product-card__category absolute right-3 top-3 px-3 py-1 text-[10px] font-medium uppercase tracking-wider">
             {product.category}
           </div>
-        </div>
-      </Link>
-
-      {/* Product Info */}
-      <div className="space-y-2">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground">
-          {product.brand}
-        </p>
-        <Link href={`/products/${productId}`}>
-          <h3 className="font-bold text-foreground group-hover:text-muted-foreground transition-colors">
-            {product.name}
-          </h3>
         </Link>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-foreground text-foreground" />
-            <span className="text-sm font-medium">{product.rating}</span>
-          </div>
-          <span className="text-xs text-muted-foreground">({product.reviews})</span>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-center gap-2 pt-2">
-          <span className="text-lg font-bold text-foreground">₦{product.price}</span>
-          {product.originalPrice && (
-            <span className="text-sm line-through text-muted-foreground">
-              ₦{product.originalPrice}
-            </span>
-          )}
-        </div>
-
-        {/* Add to Cart Button */}
-        <motion.button
+        <button
           onClick={handleQuickAdd}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full mt-4 py-3 bg-foreground text-background rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+          disabled={!product.inStock || product.sizes.length === 0}
+          className="product-card__quick-add disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <ShoppingBag className="w-4 h-4" />
-          Add to Cart
-        </motion.button>
+          <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+          {product.inStock ? 'Quick add' : 'Sold out'}
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              {product.brand} <span className="px-1 text-accent">/</span> {product.category}
+            </p>
+            <Link href={`/products/${productId}`} className="inline-flex items-center gap-1.5">
+              <h3 className="font-serif text-[21px] leading-tight text-foreground transition-colors group-hover:text-accent">
+                {product.name}
+              </h3>
+              <ArrowUpRight className="h-3.5 w-3.5 text-accent opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+            </Link>
+          </div>
+          <div className="shrink-0 pt-1 text-right">
+            <span className="block text-sm font-semibold text-foreground">₦{product.price.toLocaleString()}</span>
+            {product.originalPrice && (
+              <span className="text-xs text-muted-foreground line-through">
+                ₦{product.originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1 pt-1 text-xs text-muted-foreground">
+          <Star className="h-3 w-3 fill-accent text-accent" aria-hidden="true" />
+          <span className="text-foreground">{product.rating}</span>
+          <span>({product.reviews} reviews)</span>
+        </div>
       </div>
     </motion.div>
   );

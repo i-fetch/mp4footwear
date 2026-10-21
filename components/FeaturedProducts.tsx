@@ -5,7 +5,6 @@ import { ProductCard } from './ProductCard';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { SiteLoader } from './SiteLoader';
 
 interface Product {
   _id: string;
@@ -54,42 +53,61 @@ export function FeaturedProducts() {
   }, []);
 
   if (loading) {
-    return <SiteLoader message="Selecting featured pairs" />;
+    return (
+      <section className="featured-collection" aria-label="Loading featured footwear">
+        <div className="featured-collection__inner">
+          <div className="featured-collection__heading">
+            <div>
+              <p className="eyebrow">Selected for you</p>
+              <h2 className="section-title">The latest edit.</h2>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="product-skeleton">
+                <div className="product-skeleton__image" />
+                <div className="product-skeleton__line" />
+                <div className="product-skeleton__line product-skeleton__line--short" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
-    <section id="featured" className="w-full py-20 md:py-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <section id="featured" className="featured-collection">
+      <div className="featured-collection__inner">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-col md:flex-row md:items-end md:justify-between mb-16"
+          className="featured-collection__heading"
         >
           <div>
-            <p className="text-sm uppercase tracking-widest text-muted-foreground mb-2">
-              Curated Selection
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Featured Collection
-            </h2>
+            <p className="eyebrow">Selected for you</p>
+            <h2 className="section-title">The latest edit.</h2>
           </div>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 text-foreground hover:text-muted-foreground transition-colors mt-4 md:mt-0"
+            className="featured-collection__all"
           >
-            View All
-            <ArrowRight className="w-4 h-4" />
+            View the collection
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </motion.div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-7 lg:gap-y-14">
           {featured.map((product, index) => (
             <ProductCard key={product.id ?? (product as any)._id} product={product} index={index} />
           ))}
         </div>
+        {featured.length === 0 && (
+          <p className="border-y border-border py-12 text-center text-sm text-muted-foreground">
+            New pairs are being added to the collection.
+          </p>
+        )}
       </div>
     </section>
   );

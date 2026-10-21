@@ -18,7 +18,7 @@ function ContactContent() {
   return (
     <>
       <Navbar />
-      <main className="w-full bg-background">
+      <main className="contact-page w-full bg-background">
         <section className="border-b border-border bg-secondary/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <p className="text-sm uppercase tracking-[0.28em] text-muted-foreground mb-5">

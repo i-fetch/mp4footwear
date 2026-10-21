@@ -46,7 +46,7 @@ function ProductPageContent({ product }: { product: Product }) {
       <main className="w-full min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-12">
+          <div className="product-breadcrumb">
             <Link href="/products" className="hover:text-foreground transition-colors">
               Products
             </Link>
@@ -58,10 +58,7 @@ function ProductPageContent({ product }: { product: Product }) {
           <ProductDetail product={product} />
 
           {/* Related Products */}
-          <div className="border-t border-border pt-20">
-            <h2 className="text-3xl font-bold text-foreground mb-8">You Might Also Like</h2>
-            <FeaturedProducts />
-          </div>
+          <FeaturedProducts />
         </div>
       </main>
       <Footer />

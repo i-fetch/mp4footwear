@@ -1,15 +1,15 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { products } from '@/lib/mockData';
 
 export function Hero() {
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
   const [direction, setDirection] = useState(1);
-
   const currentProduct = products[currentProductIndex];
 
   useEffect(() => {
@@ -17,64 +17,41 @@ export function Hero() {
 
     const interval = setInterval(() => {
       setDirection(1);
-
-      setCurrentProductIndex(
-        (prev) => (prev + 1) % products.length
-      );
+      setCurrentProductIndex((index) => (index + 1) % products.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, [autoRotate]);
 
-  const nextProduct = () => {
+  const goToProduct = (index: number) => {
     setAutoRotate(false);
-    setDirection(1);
-
-    setCurrentProductIndex(
-      (prev) => (prev + 1) % products.length
-    );
+    setDirection(index >= currentProductIndex ? 1 : -1);
+    setCurrentProductIndex(index);
   };
 
-  const prevProduct = () => {
+  const moveProduct = (step: number) => {
     setAutoRotate(false);
-    setDirection(-1);
-
-    setCurrentProductIndex(
-      (prev) => (prev - 1 + products.length) % products.length
-    );
+    setDirection(step);
+    setCurrentProductIndex((index) => (index + step + products.length) % products.length);
   };
 
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? '8%' : '-8%',
+    enter: (slideDirection: number) => ({
+      x: slideDirection > 0 ? '4%' : '-4%',
       opacity: 0,
-      scale: 1.08,
-      filter: 'blur(8px)',
+      scale: 1.04,
     }),
-
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-    },
-
-    exit: (direction: number) => ({
-      x: direction > 0 ? '-8%' : '8%',
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit: (slideDirection: number) => ({
+      x: slideDirection > 0 ? '-4%' : '4%',
       opacity: 0,
-      scale: 0.98,
-      filter: 'blur(5px)',
+      scale: 1.02,
     }),
   };
 
   return (
-    <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden bg-black">
-
-      {/* IMAGE SLIDES */}
-      <AnimatePresence
-        mode="wait"
-        custom={direction}
-      >
+    <section className="editorial-hero" aria-labelledby="hero-title">
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentProduct.id}
           custom={direction}
@@ -82,164 +59,99 @@ export function Hero() {
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{
-            duration: 0.9,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          className="absolute inset-0 w-full h-full"
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="editorial-hero__image"
         >
-          {/* Image */}
-
           <motion.img
             src={currentProduct.image}
             alt={currentProduct.name}
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ scale: 1.08 }}
+            className="editorial-hero__photo"
+            initial={{ scale: 1.04 }}
             animate={{ scale: 1 }}
-            transition={{
-              duration: 5,
-              ease: 'easeOut',
-            }}
+            transition={{ duration: 4.8, ease: 'easeOut' }}
           />
-
-          {/* Dark gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 pointer-events-none" />
-
-          {/* Extra side gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/20 pointer-events-none" />
+          <div className="editorial-hero__shade" />
         </motion.div>
       </AnimatePresence>
 
-      {/* PRODUCT INFORMATION */}
-      <AnimatePresence mode="wait">
+      <div className="editorial-hero__content">
         <motion.div
           key={currentProduct.id}
-          initial={{
-            opacity: 0,
-            y: 25,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            y: -15,
-          }}
-          transition={{
-            duration: 0.6,
-            delay: 0.15,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          className="absolute bottom-10 left-8 md:left-16 z-20 pointer-events-none"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="editorial-hero__copy"
         >
-          {/* Slide number */}
-          <motion.p
-            initial={{ opacity: 0, letterSpacing: '0.1em' }}
-            animate={{
-              opacity: 1,
-              letterSpacing: '0.3em',
-            }}
-            transition={{
-              duration: 0.7,
-              delay: 0.2,
-            }}
-            className="text-xs uppercase text-white/70 font-mono"
-          >
-            0{currentProductIndex + 1} / 0{products.length}
-          </motion.p>
-
-          {/* Product name */}
-          <motion.h2
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.7,
-              delay: 0.3,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="text-2xl md:text-4xl font-extrabold uppercase tracking-tight text-white mt-1"
-          >
-            {currentProduct.name}
-          </motion.h2>
+          <p className="editorial-hero__eyebrow">
+            <span>MP4 Footwear</span>
+            <span className="editorial-hero__separator" />
+            The collection, 2026
+          </p>
+          <h1 id="hero-title" className="editorial-hero__title">
+            The footwear
+            <br />
+            <span>edit.</span>
+          </h1>
+          <p className="editorial-hero__description">
+            Distinctive pairs. Considered details. Find the one that moves with you.
+          </p>
+          <div className="editorial-hero__actions">
+            <Link href="/products" className="editorial-hero__primary-link">
+              Explore the collection
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href="/products" className="editorial-hero__text-link">
+              Find your pair
+            </Link>
+          </div>
         </motion.div>
-      </AnimatePresence>
 
-      {/* CONTROLS */}
-      <div className="absolute bottom-10 right-8 md:right-16 z-20 flex items-center gap-6">
+        <div className="editorial-hero__product-note">
+          <span className="editorial-hero__product-index">
+            0{currentProductIndex + 1} <span>/</span> 0{products.length}
+          </span>
+          <span className="editorial-hero__product-name">{currentProduct.name}</span>
+          <span className="editorial-hero__product-category">{currentProduct.category}</span>
+        </div>
+      </div>
 
-        {/* Pagination Dots */}
-        <div className="flex gap-2 items-center">
-          {products.map((_, idx) => (
+      <div className="editorial-hero__controls" role="group" aria-label="Featured products">
+        <div className="editorial-hero__pagination">
+          {products.map((product, index) => (
             <motion.button
-              key={idx}
-              onClick={() => {
-                setAutoRotate(false);
-
-                setDirection(
-                  idx > currentProductIndex ? 1 : -1
-                );
-
-                setCurrentProductIndex(idx);
-              }}
+              key={product.id}
+              onClick={() => goToProduct(index)}
               animate={{
-                width: idx === currentProductIndex ? 32 : 12,
-                opacity: idx === currentProductIndex ? 1 : 0.4,
+                width: index === currentProductIndex ? 30 : 12,
+                opacity: index === currentProductIndex ? 1 : 0.42,
               }}
-              whileHover={{
-                opacity: 0.8,
-                scale: 1.1,
-              }}
-              transition={{
-                duration: 0.3,
-              }}
-              className="h-1.5 rounded-full bg-white"
-              aria-label={`Go to slide ${idx + 1}`}
+              transition={{ duration: 0.25 }}
+              className="editorial-hero__dot"
+              aria-label={`Show ${product.name}`}
+              aria-current={index === currentProductIndex}
             />
           ))}
         </div>
-
-        {/* Arrow Buttons */}
-        <div className="flex gap-2">
-
+        <div className="editorial-hero__arrows">
           <motion.button
-            onClick={prevProduct}
-            whileHover={{
-              scale: 1.08,
-              x: -2,
-            }}
-            whileTap={{
-              scale: 0.92,
-            }}
-            className="p-3 rounded-full border border-white/30 bg-black/40 backdrop-blur-md hover:bg-white hover:text-black transition-colors"
+            onClick={() => moveProduct(-1)}
+            whileTap={{ scale: 0.94 }}
+            className="editorial-hero__arrow"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="h-4 w-4" />
           </motion.button>
-
           <motion.button
-            onClick={nextProduct}
-            whileHover={{
-              scale: 1.08,
-              x: 2,
-            }}
-            whileTap={{
-              scale: 0.92,
-            }}
-            className="p-3 rounded-full border border-white/30 bg-black/40 backdrop-blur-md hover:bg-white hover:text-black transition-colors"
+            onClick={() => moveProduct(1)}
+            whileTap={{ scale: 0.94 }}
+            className="editorial-hero__arrow"
             aria-label="Next slide"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="h-4 w-4" />
           </motion.button>
-
         </div>
       </div>
     </section>
   );
 }
+

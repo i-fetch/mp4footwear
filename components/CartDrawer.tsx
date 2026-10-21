@@ -33,11 +33,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: 400 }}
             transition={{ type: 'spring', damping: 30 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-50 border-l border-border shadow-lg flex flex-col"
+            className="cart-drawer fixed right-0 top-0 h-full w-full max-w-md bg-background z-50 border-l border-border shadow-lg flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-2xl font-bold">Your Cart</h2>
+              <h2 className="font-serif text-2xl font-medium">Your bag <span className="text-sm text-muted-foreground">({items.length})</span></h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-secondary rounded-lg transition-colors"
@@ -84,6 +84,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         {/* Quantity Controls */}
                         <div className="flex items-center gap-2 mt-3">
                           <button
+                            aria-label={`Decrease ${item.name} quantity`}
                             onClick={() =>
                               updateQuantity(item.productId, item.size, item.quantity - 1)
                             }
@@ -95,6 +96,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             {item.quantity}
                           </span>
                           <button
+                            aria-label={`Increase ${item.name} quantity`}
                             onClick={() =>
                               updateQuantity(item.productId, item.size, item.quantity + 1)
                             }
@@ -103,6 +105,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             <Plus className="w-4 h-4" />
                           </button>
                           <button
+                            aria-label={`Remove ${item.name} from bag`}
                             onClick={() => removeItem(item.productId, item.size)}
                             className="ml-auto p-1 hover:bg-destructive/10 rounded transition-colors"
                           >
