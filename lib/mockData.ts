@@ -182,6 +182,7 @@ export const categories = [
   'Handmade Footwear',
   'Foreign Sandals',
   'Handmade Sandal',
+  'Foreign footwears',
 ];
 
 export const testimonials = [

@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { connectDB } from '@/lib/mongodb';
 import { Order } from '@/lib/models';
+import { sendOrderEmail } from '@/lib/orderEmail';
 
 interface PaystackTransaction {
   id: number | string;
@@ -364,6 +365,23 @@ export async function verifyAndApplyPaystackPayment(
         orderReference: order.orderReference || order.paystackReference,
       };
     }
+  }
+
+  if (update.modifiedCount === 1) {
+    await sendOrderEmail('paid', {
+      email: order.customer.email,
+      customerName: order.customer.name,
+      orderReference: order.orderReference || reference,
+      items: order.items.map(
+        (item: { name: string; size: number; quantity: number }) => ({
+          name: item.name,
+          size: item.size,
+          quantity: item.quantity,
+        })
+      ),
+      amountKobo: order.amountKobo,
+      currency: order.currency,
+    });
   }
 
   return {

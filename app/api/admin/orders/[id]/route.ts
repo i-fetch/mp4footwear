@@ -8,6 +8,7 @@ import {
   type FulfillmentStatus,
 } from '@/lib/fulfillment';
 import { isValidFulfillmentTransition } from '@/lib/orderTracking';
+import { sendOrderEmail } from '@/lib/orderEmail';
 
 export const runtime = 'nodejs';
 
@@ -204,6 +205,51 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         { error: 'Order changed during this update. Reload and try again.' },
         { status: 409 }
       );
+    }
+
+    if (
+      statusChanged &&
+      (statusToSave === 'SHIPPED' || statusToSave === 'DELIVERED')
+    ) {
+      try {
+        const updatedOrder = await Order.findById(id)
+          .select(
+            'orderReference paystackReference customer.name customer.email items amountKobo currency shipping'
+          )
+          .lean();
+        if (updatedOrder) {
+          await sendOrderEmail(
+            statusToSave === 'SHIPPED' ? 'shipped' : 'delivered',
+            {
+              email: updatedOrder.customer.email,
+              customerName: updatedOrder.customer.name,
+              orderReference:
+                updatedOrder.orderReference ||
+                updatedOrder.paystackReference ||
+                id,
+              items: updatedOrder.items.map(
+                (item: { name: string; size: number; quantity: number }) => ({
+                  name: item.name,
+                  size: item.size,
+                  quantity: item.quantity,
+                })
+              ),
+              amountKobo: updatedOrder.amountKobo,
+              currency: updatedOrder.currency,
+              carrier: updatedOrder.shipping?.carrier,
+              trackingNumber: updatedOrder.shipping?.trackingNumber,
+              trackingUrl: updatedOrder.shipping?.trackingUrl,
+              estimatedDeliveryAt:
+                updatedOrder.shipping?.estimatedDeliveryAt,
+            }
+          );
+        }
+      } catch (error) {
+        console.error('Fulfillment notification could not be prepared', {
+          reason: 'order_email_data_lookup_failed',
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+        });
+      }
     }
 
     return NextResponse.json({ message: 'Order tracking updated.' });

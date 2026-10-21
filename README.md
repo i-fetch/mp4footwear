@@ -32,6 +32,10 @@ delivery charge or track per-size stock quantities.
 
 1. Copy `.env.example` to `.env.local`.
 2. Set `MONGODB_URI` and a long, random `JWT_SECRET`.
+   Configure `RESEND_API_KEY`, a verified `ORDER_EMAIL_FROM` sender, and
+   `NEXT_PUBLIC_SITE_URL` to enable payment and fulfillment email notifications.
+   `ORDER_EMAIL_REPLY_TO` is optional. Verify the sender domain in Resend and set
+   `ORDER_EMAIL_FROM` to an address on that domain.
 3. In your Paystack dashboard, use your **test** API keys for development:
    - `PAYSTACK_SECRET_KEY` must be the test secret key (`sk_test_...`).
    - `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` is included for frontend integrations, but
@@ -61,8 +65,11 @@ assigned for future lookups. The order tracking API is rate-limited using
 MongoDB-backed per-IP counters. Administrators can manage fulfillment and
 shipping updates from `/admin/orders` after signing in.
 
-This project does not currently have an email delivery provider. Order and
-shipping notifications are therefore not sent by email.
+Order emails use Resend's REST API. Payment confirmation is emailed only after
+Paystack verification and the order's paid-state database update succeed.
+Dispatch and delivery emails are sent after an authorized admin fulfillment
+status update is saved. Email delivery failures are logged but do not reverse a
+successful payment or fulfillment update.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
