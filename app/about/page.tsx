@@ -9,15 +9,15 @@ function AboutContent() {
     <>
       <Navbar />
       <main className="w-full bg-background">
-        <section className="border-b border-border bg-foreground text-background">
+        <section className="border-b border-border bg-card text-card-foreground">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36">
-            <p className="text-sm uppercase tracking-[0.28em] text-background/60 mb-6">
+            <p className="text-sm uppercase tracking-[0.28em] text-card-foreground/60 mb-6">
               The MP4 story
             </p>
             <h1 className="max-w-4xl text-5xl md:text-7xl font-bold tracking-tight">
               Made for the miles that become memories.
             </h1>
-            <p className="max-w-2xl mt-8 text-lg md:text-xl leading-8 text-background/70">
+            <p className="max-w-2xl mt-8 text-lg md:text-xl leading-8 text-card-foreground/70">
               MP4 Footwear brings considered design and everyday performance together,
               creating premium pairs that feel as good in motion as they look at rest.
             </p>

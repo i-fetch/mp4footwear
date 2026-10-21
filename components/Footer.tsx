@@ -13,13 +13,13 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-foreground text-background py-16 md:py-24">
+    <footer className="w-full border-t border-border bg-card text-card-foreground py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">MP4 Footwears</h3>
-            <p className="text-background/75">
+            <p className="text-card-foreground/75">
               Premium palms crafted for excellence. Elevating style and performance since 2024.
             </p>
           </div>
@@ -27,16 +27,16 @@ export function Footer() {
           {/* Quick Links */}
           <div className="space-y-4">
             <h4 className="font-semibold">Our Shop</h4>
-            <div className="space-y-2 text-sm text-background/75">
+            <div className="space-y-2 text-sm text-card-foreground/75">
               <Link
                 href="/products"
-                className="block hover:text-background transition-colors"
+                className="block hover:text-card-foreground transition-colors"
               >
                 All Products
               </Link>
               <Link
                 href="/products"
-                className="block hover:text-background transition-colors"
+                className="block hover:text-card-foreground transition-colors"
               >
                
               </Link>
@@ -46,11 +46,11 @@ export function Footer() {
           {/* Company */}
           <div className="space-y-4">
             <h4 className="font-semibold">Company</h4>
-            <div className="space-y-2 text-sm text-background/75">
-              <Link href="/about" className="block hover:text-background transition-colors">
+            <div className="space-y-2 text-sm text-card-foreground/75">
+              <Link href="/about" className="block hover:text-card-foreground transition-colors">
                 About Us
               </Link>
-              <Link href="/contact" className="block hover:text-background transition-colors">
+              <Link href="/contact" className="block hover:text-card-foreground transition-colors">
                 Contact
               </Link>
              
@@ -61,7 +61,7 @@ export function Footer() {
           {/* Contact */}
           <div className="space-y-4">
             <h4 className="font-semibold">Contact</h4>
-            <div className="space-y-3 text-sm text-background/75">
+            <div className="space-y-3 text-sm text-card-foreground/75">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <span>+234 905 776 9271</span>
@@ -79,7 +79,7 @@ export function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div className="border-t border-background/20 pt-12 mb-12">
+        <div className="border-t border-border pt-12 mb-12">
           <div className="max-w-md">
             <h4 className="font-semibold mb-4">Subscribe to our newsletter</h4>
             <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -88,10 +88,10 @@ export function Footer() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 bg-background/10 rounded-lg text-background placeholder:text-background/50 outline-none focus:ring-2 focus:ring-background/50 transition-all"
+                className="flex-1 px-4 py-3 bg-input border border-border text-card-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 required
               />
-              <button className="px-6 py-3 bg-background text-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity">
+              <button className="px-6 py-3 bg-foreground text-background rounded-lg font-semibold hover:opacity-90 transition-opacity">
                 Subscribe
               </button>
             </form>
@@ -99,16 +99,16 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-background/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-background/75">
+        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-card-foreground/75">
           <p>&copy; 2026 MP4-FOOTWEAR. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/" className="hover:text-background transition-colors">
+            <Link href="/" className="hover:text-card-foreground transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/" className="hover:text-background transition-colors">
+            <Link href="/" className="hover:text-card-foreground transition-colors">
               Terms & Conditions
             </Link>
-            <Link href="/" className="hover:text-background transition-colors">
+            <Link href="/" className="hover:text-card-foreground transition-colors">
               Shipping Info
             </Link>
           </div>
